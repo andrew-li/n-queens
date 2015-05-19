@@ -73,13 +73,16 @@ window.countNRooksSolutions = function(n) {
 
 
 
+  // recurse on columns
   var repeat = function(board,j){
 
+    // means we reached the end of the board.
+    // but what if reached the end of the board, but don't have a solution? will that never happen?
     if(j >= n){
       return true;
     }
 
-   for(var i = 0; i < n; i++)
+   for(var i = 0; i < n; i++) // loop on rows
    {
 
       board.togglePiece(i, j);
@@ -99,61 +102,70 @@ window.countNRooksSolutions = function(n) {
     //board.print();
     return false;
   }
-  //console.log("first call");
-  //console.log(board.get(0)[0]);
+
   repeat(board,0);
-
-
-
-
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-  // var repeat = function(board,i,j){
-
-  //   if(j === n){
-  //     solutionCount++;
-  //   }
-
-  //   while(true){
-  //     if(j === n && i===n ){
-  //       solutionCount++;
-  //       break;
-  //     }
-
-  //     board.togglePiece(i, j);
-  //     if(board.hasRowConflictAt(i)){
-  //       board.togglePiece(i, j);
-  //       i+=1;
-  //       j=0;
-  //       continue;
-  //     }
-  //     if(board.hasColConflictAt(j)){
-  //       board.togglePiece(i, j);
-  //       j+=1;
-  //       continue;
-  //     }
-  //     if(!board.hasAnyRooksConflictsOn(i,j)){
-  //       var old_i = i;
-  //       var old_j = j;
-  //       j+=1;
-  //       if(j === n){
-  //         j = 0;
-  //         i ++;
-  //       }
-  //       repeat(board, i,j); // if we placed the rook
-  //       board.togglePiece(old_i, old_j);
-  //     }
-  //   }
-
-
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution; //fixme
+  var done = false;
+
+  // means we reached the end of the board.
+  // but what if reached the end of the board, but don't have a solution? will that never happen?
+  var board = new Board({'n': n});
+
+  if(n===0){
+      return [];
+  }
+  // recurse on columns
+  var repeat = function(board,j){
+
+    // means we reached the end of the board.
+    // but what if reached the end of the board, but don't have a solution? will that never happen?
+
+    if(j >= n){
+      return true;
+    }
+
+   for(var i = 0; i < n; i++) // loop on rows
+   {
+      board.togglePiece(i, j);
+     if(!board.hasRowConflictAt(i) && !board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(i,j))
+      && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(i,j)))
+     {
+       if(repeat(board.copy(), j + 1) === true)
+       {
+          if(solution === undefined){
+            solution = board.copy();
+            done = true;
+          }
+          return true;
+       }
+
+     }
+     board.togglePiece(i, j);
+     if(done)
+      return true;
+   };
+
+    return false;
+  }
+
+  repeat(board, 0);
+
+  if(solution === undefined){
+    solution = board.rows();
+  }
+  else{
+    solution = solution.rows();
+  }
+
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
@@ -162,7 +174,44 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0; //fixme
+
+
+    // means we reached the end of the board.
+    // but what if reached the end of the board, but don't have a solution? will that never happen?
+  var board = new Board({'n': n});
+
+  // recurse on columns
+  var repeat = function(board,j){
+
+    // means we reached the end of the board.
+    // but what if reached the end of the board, but don't have a solution? will that never happen?
+
+    if(j >= n){
+      return true;
+    }
+
+   for(var i = 0; i < n; i++) // loop on rows
+   {
+      board.togglePiece(i, j);
+     if(!board.hasRowConflictAt(i) && !board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(i,j))
+      && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(i,j)))
+     {
+       if(repeat(board.copy(), j + 1) === true)
+       {
+        solutionCount++;
+       }
+
+     }
+     board.togglePiece(i, j);
+   };
+
+
+    //board.print();
+    return false;
+  }
+
+  repeat(board,0);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;

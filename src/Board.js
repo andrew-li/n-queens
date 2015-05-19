@@ -183,6 +183,13 @@
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var i = 0;
       var j = majorDiagonalColumnIndexAtFirstRow;
+
+      if(j<0){
+        i = i + (-j);
+        j=0;
+      }
+
+
       var count = 0;
       while(i < this.get('n') && j < this.get('n')) {
         if(this.get(i++)[j++] === 1)
@@ -214,6 +221,12 @@
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       var i = 0;
       var j = minorDiagonalColumnIndexAtFirstRow;
+
+      if(j>=this.get('n')){
+        i = i + (j - (this.get('n')-1));
+        j=this.get('n')-1;
+      }
+
       var count = 0;
       while(i < this.get('n') && j >= 0) {
         if(this.get(i++)[j--] === 1)
