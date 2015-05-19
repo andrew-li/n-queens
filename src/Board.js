@@ -90,6 +90,7 @@
       );
     },
 
+    // Complexity is O(n^2)
     hasAnyQueensConflicts: function() {
       return this.hasAnyRooksConflicts() || this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },

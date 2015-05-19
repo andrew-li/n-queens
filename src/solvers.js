@@ -16,37 +16,44 @@
 window.findNRooksSolution = function(n) {
   var solution = undefined; //fixme
   var board = new Board({'n': n});
-  var i=0;
-  var j=0;
-  // returns a single solution
-    while(i < n && j < n){
+
+  var repeat = function(board,j){
+
+    // means we reached the end of the board.
+    // but what if reached the end of the board, but don't have a solution? will that never happen?
+    if(j >= n){
+      return true;
+    }
+
+   for(var i = 0; i < n; i++) // loop on rows
+   {
 
       board.togglePiece(i, j);
-      if(board.hasRowConflictAt(i)){
-        board.togglePiece(i, j);
-        i+=1;
-        j=0;
-        continue;
-      }
-      if(board.hasColConflictAt(j)){
-        board.togglePiece(i, j);
-        j+=1;
-        continue;
-      }
-      if(!board.hasAnyRooksConflictsOn(i,j)){
-        var old_i = i;
-        var old_j = j;
-        j+=1;
-        if(j === n){
-          j = 0;
-          i ++;
-        }
-        //repeat(board, i,j); // if we placed the rook
-        //board.togglePiece(old_i, old_j);
-      }
-    }
+      // we only check for row conflict, since we never place two items(rooks/queens) in the same column,
+      // when we place a piece, we go to the next column straight away.
+     if(!board.hasRowConflictAt(i))
+     {
+       if(repeat(board, j + 1) === true)
+       {
+        if(solution === undefined){
+            solution = board;
+            done = true;
+          }
+          return true;
+       }
+
+     }
+     board.togglePiece(i, j);
+   }
+
+
     //board.print();
-    solution = board.rows();
+    return false;
+  }
+
+  repeat(board,0);
+  solution = solution.rows();
+
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
@@ -56,21 +63,8 @@ window.findNRooksSolution = function(n) {
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
 
-  console.log("got here");
   var solutionCount = 0; //fixme
   var board = new Board({'n': n});
-  // place one in the first row - n possibilities.
-    // for (n - 1 ) rooks place one rook per row
-
-  // for(var i = 0 ; i < n; i++){
-  //   for(var j = 0; j < n; j++){
-
-  //   }
-  // }
-  // optimization
-  // /var colConflicts = {'0': true};
-  //
-
 
 
   // recurse on columns
@@ -84,12 +78,15 @@ window.countNRooksSolutions = function(n) {
 
    for(var i = 0; i < n; i++) // loop on rows
    {
-
       board.togglePiece(i, j);
+
+      // we only check for row conflict, since we never place two items(rooks/queens) in the same column,
+      // when we place a piece, we go to the next column straight away.
      if(!board.hasRowConflictAt(i))
      {
-       if(repeat(board.copy(), j + 1) === true)
+       if(repeat(board, j + 1) === true)
        {
+
         solutionCount++;
         //return true;
        }
@@ -99,7 +96,7 @@ window.countNRooksSolutions = function(n) {
    }
 
 
-    //board.print();
+
     return false;
   }
 
@@ -129,6 +126,9 @@ window.findNQueensSolution = function(n) {
     // means we reached the end of the board.
     // but what if reached the end of the board, but don't have a solution? will that never happen?
 
+
+    // we only increment j when we place a rook/queen. so when j reaches n, it means we
+    // placed all n rooks/queens, since we reached the end of the board.
     if(j >= n){
       return true;
     }
@@ -139,10 +139,10 @@ window.findNQueensSolution = function(n) {
      if(!board.hasRowConflictAt(i) && !board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(i,j))
       && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(i,j)))
      {
-       if(repeat(board.copy(), j + 1) === true)
+       if(repeat(board, j + 1) === true)
        {
           if(solution === undefined){
-            solution = board.copy();
+            solution = board;
             done = true;
           }
           return true;
@@ -191,13 +191,15 @@ window.countNQueensSolutions = function(n) {
       return true;
     }
 
+
+
    for(var i = 0; i < n; i++) // loop on rows
    {
       board.togglePiece(i, j);
      if(!board.hasRowConflictAt(i) && !board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(i,j))
       && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(i,j)))
      {
-       if(repeat(board.copy(), j + 1) === true)
+       if(repeat(board, j + 1) === true)
        {
         solutionCount++;
        }
@@ -207,7 +209,7 @@ window.countNQueensSolutions = function(n) {
    };
 
 
-    //board.print();
+
     return false;
   }
 
