@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <title>Solving N-Queens with Web Workers</title>
+
+  <h1>Solving N-Queens with Web Workers</h1>
+
+  <!-- source files -->
+  <script src="jquery.js"></script>  
+  <script src="worker.js"></script>
+  <script src="solvers.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+
+    <p>
+      This web page can solve the <a href="http://www.durangobill.com/N_Queens.html">n-queens problem</a> in singlethreaded mode or in multithreaded mode using web workers. This web page was simply created to learn how to use web workers as part of an extra credit assignment to parallelize the solution to n-queens.
+    </p>
+
+    <p>
+      The solution to the n-queens problem on this web page uses the bitwise algorithm from: <a href="http://gregtrowbridge.com/a-bitwise-solution-to-the-n-queens-problem-in-javascript/">http://gregtrowbridge.com/a-bitwise-solution-to-the-n-queens-problem-in-javascript/</a>. A detailed explanation of the bitwise algorithm can be found in that blog. I take no credit for implementing or devising the algorithm.
+    </p>
+
+    <p>
+      The exact code to solve and parallelize the n-queens problem can be seen by viewing the source code of this page. Each initial branch (1 queen placed on the board) of the n-queens solution is put in its own web worker. Each web worker will find all board solutions in its given branch and then update the total solution count. Since only the initial branches of the solution will spawn a web worker, the total number of web workers to solve the problem will be equal to the number of queens.
+    </p>
+
+    <p>
+      There are three options: solve the problem in singlethreaded mode, solve the problem in multithreaded mode, and solve the problem in multithreaded mode with reduced output. The second option will display the number of solutions found by each web worker, while the third option will not in order to reduce overhead (though this overhead is negligible for larger numbers). Since the web workers run asynchronously, you may notice that each web worker will not necessarily finish in the order it was spawned. 
+    </p>
+
+    <p>
+      Feel free to compare the running times between the single and multithreaded versions. But be warned, web workers run clientside, so choosing a high number may consume large amounts of cpu and/or take a long time to complete. For a point of reference, it takes about 
+      120 seconds in singlethreaded mode for my 2014 MacBook Pro to find the solution for 17 queens, and about 15 seconds in multithreaded mode. For a low amount of queens, running in singlethreaded mode will most likely be faster than running in multithreaded mode since there will be reduced overhead from not having to spawn additional web workers and event listeners.
+    </p>
+
+  </div>
+   
+  <div>
+
+    <input id="inputBox" type="text" name="text">
+    <input id="runWithoutWebWorkers" type="submit" value="Run without Web Workers"> 
+    <input id="runWithWebWorkers" type="submit" value="Run with Web Workers">
+    <input id="runWithWebWorkersReducedMessages" type="submit" value="Run with Web Workers and Reduced Output Messages">
+
+  </div>
+
+  <div id="output"></div>
+
+
+  <script>
+ 
+    //option
+    //1: run using a single thread
+    //2: run using a thread per initial recursive branch
+    //3: run similarly to option 2 but with reduced output
+    var handleClick = function(option) {
+      //clear the output div
+      $('#output').empty();
+
+      //set both submit buttons to disabled
+      document.getElementById('runWithoutWebWorkers').disabled = true;
+      document.getElementById('runWithWebWorkers').disabled = true;
+      document.getElementById('runWithWebWorkersReducedMessages').disabled = true;   
+
+      //get the numeric value of the input
+      var inputValue = Number($('#inputBox').val().trim());
+
+      //clear the input box
+      $('#inputBox').val('');
+
+      //call the n queens solutions finder function in singlethreaded mode
+      countNQueensSolutions(inputValue, function(message) {
+        //display output
+        $( '#output' ).append("<div>" + message + "</div>");
+      }, function(message) {
+        //set both submit buttons to disabled
+        document.getElementById('runWithoutWebWorkers').disabled = false;
+        document.getElementById('runWithWebWorkers').disabled = false;   
+        document.getElementById('runWithWebWorkersReducedMessages').disabled = false;       
+      }, option);
+    };
+    
+    $(document).ready(function(){
+
+      $('#runWithoutWebWorkers').click(function() {
+        handleClick(0);
+      }); 
+
+      $('#runWithWebWorkers').click(function() {
+        handleClick(1);
+      });  
+
+      $('#runWithWebWorkersReducedMessages').click(function() {
+        handleClick(2);
+      });   
+
+    });
+
+  </script>
+
+</body>
+
+</html>
