@@ -25,3 +25,6 @@ So for a 4x4 board, there will be four different Web Workers spawned. The initia
 0000 | 0000 | 0000 | 0000<br/>
 A new queen will then be placed row by row (a queen will still be placed in each column, but no more than one in a row at any given time) until 4 queens are placed on the board in a valid configuration. If an invalid board configuration is reached, the solution will backtrack. Each thread will count the number of valid 4 piece board configurations starting from its given initial board configuration.
 
+
+DEMO: [n-queens](http://andrew-li.github.io/nqueens/index.html)<br/>
+
