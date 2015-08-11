@@ -18,10 +18,10 @@ The basic solution uses a board class to construct each board configuration and 
 
 The difficult part of multithreading the solution was figuring out how to divide the work amongst each thread. My approach to creating a multithreaded solution was to create a new thread for each initial recursive branch. In other words, a new Web Worker was spawned for every column in the board, such that each thread calculated the number of possible ways to place n number of queens on the board starting from placing a single queen in the first row for each column.
 
-So for a 4x4 board, there will be four different Web Workers spawned. The initial state for each Web Worker will look like the following:<br/>
-1000  0100  0010  0001<br/>
-0000  0000  0000  0000<br/>
-0000  0000  0000  0000<br/>
-0000  0000  0000  0000<br/>
+So for a 4x4 board, there will be four different Web Workers spawned. The initial configurations of the board for the Web Workers will look like the following:<br/>
+1000 | 0100 | 0010 | 0001<br/>
+0000 | 0000 | 0000 | 0000<br/>
+0000 | 0000 | 0000 | 0000<br/>
+0000 | 0000 | 0000 | 0000<br/>
 A new queen will then be placed row by row (a queen will still be placed in each column, but no more than one in a row at any given time) until 4 queens are placed on the board in a valid configuration. If an invalid board configuration is reached, the solution will backtrack. Each thread will count the number of valid 4 piece board configurations starting from its given initial board configuration.
 
